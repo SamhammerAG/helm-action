@@ -1,0 +1,68 @@
+name: Helm OCI Chart Build
+description: Publish Helm charts to OCI-based (Docker) registries
+author: Samhammer AG
+branding:
+  color: blue
+  icon: tag
+inputs:
+  registry:
+    required: true
+    description: OCI registry
+  registry_user:
+    required: true
+    description: OCI registry username
+  registry_password:
+    required: true
+    description: OCI registry password
+  registry_path:
+    required: true
+    description: Chart registry path
+  chart_version:
+    required: true
+    description: Chart version
+  chart_folder:
+    required: true
+    description: Chart folder
+outputs:
+  image:
+    value: ${{ steps.output.outputs.image }}
+    description: Chart image (Default '{registry}/{registry_path}:{chart_version}')
+runs:
+  using: composite
+  steps:
+    - name: Helm | Login
+      shell: bash
+      run: echo ${{ inputs.registry_password }} | helm registry login -u ${{ inputs.registry_user }} --password-stdin ${{ inputs.registry }}
+      env:
+        HELM_EXPERIMENTAL_OCI: '1'
+
+    - name: Helm | Package
+      shell: bash
+      run: helm package ${{ inputs.chart_folder }} --version ${{ inputs.chart_version }} --app-version ${{ inputs.chart_version }}
+      env:
+        HELM_EXPERIMENTAL_OCI: '1'
+
+    - name: Helm | Chart
+      shell: bash
+      run: |
+        CHART_NAME=$(yq read ${{ inputs.chart_folder }}/Chart.yaml 'name')
+        helm chart save $CHART_NAME-${{ inputs.chart_version }}.tgz ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.chart_version }}
+      env:
+        HELM_EXPERIMENTAL_OCI: '1'
+
+    - name: Helm | Chart | Push
+      shell: bash
+      run: helm chart push ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.chart_version }}
+      env:
+        HELM_EXPERIMENTAL_OCI: '1'
+
+    - name: Helm | Logout
+      shell: bash
+      run: helm registry logout ${{ inputs.registry }}
+      env:
+        HELM_EXPERIMENTAL_OCI: '1'
+
+    - name: Helm | Output
+      id: output
+      shell: bash
+      run: echo "::set-output name=image::${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.chart_version }}"

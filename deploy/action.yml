@@ -1,0 +1,117 @@
+name: Helm OCI Chart Deploy
+description: Deploy Helm charts from OCI-based (Docker) registries
+author: Samhammer AG
+branding:
+  color: blue
+  icon: upload-cloud
+inputs:
+  registry:
+    required: true
+    description: OCI registry
+  registry_user:
+    required: true
+    description: OCI registry username
+  registry_password:
+    required: true
+    description: OCI registry password
+  registry_path:
+    required: true
+    description: Chart registry path
+  chart_version:
+    required: true
+    description: Chart version
+  release_name:
+    required: true
+    description: Helm release name
+  release_name_max_length:
+    required: false
+    description: Helm release name chars before cut (defaults to 53, deactivate with 0)
+  namespace:
+    required: true
+    description: Kubernetes namespace
+  values_file:
+    required: false
+    description: Values file
+  set_string:
+    required: false
+    description: Values file
+  kube_config:
+    required: false
+    description: Kubernetes custom config
+runs:
+  using: composite
+  steps:
+    - name: Helm | Login
+      shell: bash
+      run: echo ${{ inputs.registry_password }} | helm registry login -u ${{ inputs.registry_user }} --password-stdin ${{ inputs.registry }}
+      env:
+        HELM_EXPERIMENTAL_OCI: '1'
+
+    - name: Helm | Pull
+      shell: bash
+      run: helm chart pull ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.chart_version }}
+      env:
+        HELM_EXPERIMENTAL_OCI: '1'
+
+    - name: Helm | Export
+      shell: bash
+      run: helm chart export ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.chart_version }} | grep name | cut -d ':' -f2 | tr -d ' ' > /tmp/CHART_NAME
+      env:
+        HELM_EXPERIMENTAL_OCI: '1'
+
+    - name: Helm | Release Name
+      shell: bash
+      run: |
+        RELEASE_NAME=${{ inputs.release_name }}
+        RELEASE_NAME_MAX_LENGTH=${{ inputs.release_name_max_length == null && 53 || inputs.release_name_max_length }}
+
+        if [ "$RELEASE_NAME_MAX_LENGTH" -gt 0 ] && [ ${#RELEASE_NAME} -ge $RELEASE_NAME_MAX_LENGTH ]
+        then
+            # truncate release name is recommend to set on 53 chars as this is the maximum for helm
+            echo "release name ${RELEASE_NAME} exceeds ${RELEASE_NAME_MAX_LENGTH} chars"
+            RELEASE_NAME=$(echo "${RELEASE_NAME}" | cut -c 1-${RELEASE_NAME_MAX_LENGTH} | sed "s/-$//")
+            echo "release name changed to ${RELEASE_NAME}"
+        fi
+
+        echo -n $RELEASE_NAME > /tmp/RELEASE_NAME
+
+    - name: Helm | Arguments
+      shell: bash
+      run: |
+        if [ ! -z "${{ inputs.kube_config }}" ]
+        then
+            echo ${{ inputs.kube_config }} >/tmp/kube.config
+            UPGRADE_ARGS+=" --kubeconfig /tmp/kube.config"
+        fi
+
+        if [ ! -z "${{ inputs.values_file }}" ]
+        then
+            UPGRADE_ARGS+=" -f ${{ inputs.values_file }}"
+        fi
+
+        if [ ! -z "${{ inputs.set_string }}" ]
+        then
+            UPGRADE_ARGS+=" --set-string ${{ inputs.set_string }}"
+        fi
+
+        echo -n $UPGRADE_ARGS > /tmp/UPGRADE_ARGS
+
+    - name: Helm | Chart | Install
+      shell: bash
+      run: |
+        CHART_NAME=$(cat /tmp/CHART_NAME)
+        UPGRADE_ARGS=$(cat /tmp/UPGRADE_ARGS)
+        RELEASE_NAME=$(cat /tmp/RELEASE_NAME)
+        NAMESPACE=${{ inputs.namespace }}
+
+        echo "Install: release $RELEASE_NAME to namespace $NAMESPACE, using chart $CHART_NAME with arguments $UPGRADE_ARGS"
+
+        helm upgrade -i $RELEASE_NAME $CHART_NAME -n $NAMESPACE $UPGRADE_ARGS
+      env:
+        HELM_EXPERIMENTAL_OCI: '1'
+
+    - name: Helm | Logout
+      shell: bash
+      run: helm registry logout ${{ inputs.registry }}
+      env:
+        HELM_EXPERIMENTAL_OCI: '1'
