@@ -23,6 +23,9 @@ inputs:
   chart_folder:
     required: true
     description: Chart folder
+  chart_annotations:
+    required: false
+    description: Chart annotations that should be added (e.g. company 'samhammer ag' author 'alwin schiffman')
 outputs:
   image:
     value: ${{ steps.output.outputs.image }}
@@ -35,6 +38,16 @@ runs:
       run: echo ${{ inputs.registry_password }} | helm registry login -u ${{ inputs.registry_user }} --password-stdin ${{ inputs.registry }}
       env:
         HELM_EXPERIMENTAL_OCI: '1'
+
+    - name: Helm | Chart | Annotations
+      shell: bash
+      run: |
+        if [ "${{ inputs.chart_annotations }}" ]
+        then
+            echo "${{ inputs.chart_annotations }}" | tr ',' '\n' | xargs -n2 -r bash -c 'yq write -i '"${{ inputs.chart_folder }}/Chart.yaml"' "annotations.$1" "$2"' argv0
+            echo "Cart annotations:"
+            yq read "${{ inputs.chart_folder }}/Chart.yaml" annotations
+        fi
 
     - name: Helm | Package
       shell: bash

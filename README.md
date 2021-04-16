@@ -22,6 +22,7 @@ See full parameter documentation at build/action.yml
         registry_path: charts/my-chart
         chart_folder: ./my-chart
         chart_version: 1.0
+        chart_annotations: company 'samhammer ag' #optional
 ```
 
 # Helm Action Deploy
