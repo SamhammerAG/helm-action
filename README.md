@@ -1,10 +1,10 @@
 # Helm Action
 
-Contains multiple github actions for helm
+Contains multiple github actions for helm 3
 
 # Helm Action Build
 
-Package chart with version and publish to an docker registry.
+Package chart with version and publish to an OCI-based (Docker) registry.
 For parameter documentation look at build/action.yml
 
 ## Usage
@@ -26,7 +26,7 @@ For parameter documentation look at build/action.yml
 
 # Helm Action Deploy
 
-Deploy chart from an docker registry.
+Deploy chart from an OCI-based (Docker) registry.
 See full parameter documentation at deploy/action.yml
 
 ## Usage
