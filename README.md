@@ -5,7 +5,7 @@ Contains multiple github actions for helm 3
 # Helm Action Build
 
 Package chart with version and publish to an OCI-based (Docker) registry.
-For parameter documentation look at build/action.yml
+See full parameter documentation at build/action.yml
 
 ## Usage
 
