@@ -20,6 +20,9 @@ inputs:
   chart_version:
     required: true
     description: Chart version
+  app_version:
+    required: true
+    description: App version
   chart_folder:
     required: true
     description: Chart folder
@@ -49,13 +52,15 @@ runs:
             yq read "${{ inputs.chart_folder }}/Chart.yaml" annotations
         fi
 
-    - name: Helm | Package
+    - name: Helm | Chart | Package
       shell: bash
-      run: helm package ${{ inputs.chart_folder }} --version ${{ inputs.chart_version }} --app-version ${{ inputs.chart_version }}
+      run: |
+        echo "App version: ${{ inputs.app_version }}"
+        helm package ${{ inputs.chart_folder }} --version ${{ inputs.chart_version }} --app-version ${{ inputs.app_version }}
       env:
         HELM_EXPERIMENTAL_OCI: '1'
 
-    - name: Helm | Chart
+    - name: Helm | Chart | Save
       shell: bash
       run: |
         CHART_NAME=$(yq read ${{ inputs.chart_folder }}/Chart.yaml 'name')
