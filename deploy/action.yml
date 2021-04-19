@@ -17,9 +17,9 @@ inputs:
   registry_path:
     required: true
     description: Chart registry path
-  chart_version:
+  app_version:
     required: true
-    description: Chart version
+    description: The app version tag
   release_name:
     required: true
     description: Helm release name
@@ -47,19 +47,19 @@ runs:
       env:
         HELM_EXPERIMENTAL_OCI: '1'
 
-    - name: Helm | Pull
+    - name: Helm | Chart | Pull
       shell: bash
-      run: helm chart pull ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.chart_version }}
+      run: helm chart pull ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.app_version }}
       env:
         HELM_EXPERIMENTAL_OCI: '1'
 
-    - name: Helm | Export
+    - name: Helm | Chart | Export
       shell: bash
-      run: helm chart export ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.chart_version }} | grep name | cut -d ':' -f2 | tr -d ' ' > /tmp/CHART_NAME
+      run: helm chart export ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.app_version }} | grep name | cut -d ':' -f2 | tr -d ' ' > /tmp/CHART_NAME
       env:
         HELM_EXPERIMENTAL_OCI: '1'
 
-    - name: Helm | Release Name
+    - name: Helm | Release | Name
       shell: bash
       run: |
         RELEASE_NAME=${{ inputs.release_name }}
@@ -75,7 +75,7 @@ runs:
 
         echo -n $RELEASE_NAME > /tmp/RELEASE_NAME
 
-    - name: Helm | Arguments
+    - name: Helm | Release | Arguments
       shell: bash
       run: |
         if [ ! -z "${{ inputs.kube_config }}" ]
@@ -96,7 +96,7 @@ runs:
 
         echo -n $UPGRADE_ARGS > /tmp/UPGRADE_ARGS
 
-    - name: Helm | Chart | Install
+    - name: Helm | Release | Install
       shell: bash
       run: |
         CHART_NAME=$(cat /tmp/CHART_NAME)

@@ -22,7 +22,7 @@ inputs:
     description: Chart version
   app_version:
     required: true
-    description: App version
+    description: App version (will be tagged)
   chart_folder:
     required: true
     description: Chart folder
@@ -64,13 +64,13 @@ runs:
       shell: bash
       run: |
         CHART_NAME=$(yq read ${{ inputs.chart_folder }}/Chart.yaml 'name')
-        helm chart save $CHART_NAME-${{ inputs.chart_version }}.tgz ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.chart_version }}
+        helm chart save $CHART_NAME-${{ inputs.chart_version }}.tgz ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.app_version }}
       env:
         HELM_EXPERIMENTAL_OCI: '1'
 
     - name: Helm | Chart | Push
       shell: bash
-      run: helm chart push ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.chart_version }}
+      run: helm chart push ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.app_version }}
       env:
         HELM_EXPERIMENTAL_OCI: '1'
 
