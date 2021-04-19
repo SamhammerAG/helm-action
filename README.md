@@ -14,14 +14,15 @@ See full parameter documentation at build/action.yml
     - uses: actions/checkout@v2
     - uses: azure/setup-helm@v1
     - uses: chrisdickinson/setup-yq@latest
-    - uses: SamhammerAG/helm-action/build@v1.1
+    - uses: SamhammerAG/helm-action/build@v1.2
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         registry_user: ${{ secrets.DOCKER_REGISTRY_USER }}
         registry_password: ${{ secrets.DOCKER_REGISTRY_PW }}
         registry_path: charts/my-chart
         chart_folder: ./my-chart
-        chart_version: 1.0
+        chart_version: 1.0 #optional
+        app_version: 1.0
         chart_annotations: company 'samhammer ag' #optional
 ```
 
@@ -37,13 +38,13 @@ See full parameter documentation at deploy/action.yml
     - uses: actions/checkout@v2
     - uses: azure/setup-helm@v1
     - uses: chrisdickinson/setup-yq@latest
-    - uses: SamhammerAG/helm-action/deploy@v1.1
+    - uses: SamhammerAG/helm-action/deploy@v1.2
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         registry_user: ${{ secrets.DOCKER_REGISTRY_USER }}
         registry_password: ${{ secrets.DOCKER_REGISTRY_PW }}
         registry_path: charts/my-chart
-        chart_version: 1.0
+        app_version: 1.0
         namespace: my-namespace
         release_name: my-release
         values_file: ./my-chart/values.yaml #optional

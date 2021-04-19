@@ -18,11 +18,11 @@ inputs:
     required: true
     description: Chart registry path
   chart_version:
-    required: true
-    description: Chart version
+    required: false
+    description: Chart version (only optional, when defined in Chart.yaml)
   app_version:
     required: true
-    description: App version (will be tagged)
+    description: App version (will be tagged and updated in Chart.yaml)
   chart_folder:
     required: true
     description: Chart folder
@@ -52,19 +52,28 @@ runs:
             yq read "${{ inputs.chart_folder }}/Chart.yaml" annotations
         fi
 
-    - name: Helm | Chart | Package
+    - name: Helm | Chart | Version
       shell: bash
       run: |
-        echo "App version: ${{ inputs.app_version }}"
-        helm package ${{ inputs.chart_folder }} --version ${{ inputs.chart_version }} --app-version ${{ inputs.app_version }}
-      env:
-        HELM_EXPERIMENTAL_OCI: '1'
+        if [ "${{ inputs.app_version }}" ]
+        then
+            yq write -i "${{ inputs.chart_folder }}/Chart.yaml" appVersion "${{ inputs.app_version }}"
+        else
+          echo "::error::inputs.app_version is required"; exit 1
+        fi
+
+        if [ "${{ inputs.chart_version }}" ]
+        then
+            yq write -i "${{ inputs.chart_folder }}/Chart.yaml" version "${{ inputs.chart_version }}"
+        fi
+
+        echo "App version: $(yq read '${{ inputs.chart_folder }}/Chart.yaml' appVersion)"
+        echo "Cart version: $(yq read '${{ inputs.chart_folder }}/Chart.yaml' version)"
 
     - name: Helm | Chart | Save
       shell: bash
       run: |
-        CHART_NAME=$(yq read ${{ inputs.chart_folder }}/Chart.yaml 'name')
-        helm chart save $CHART_NAME-${{ inputs.chart_version }}.tgz ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.app_version }}
+        helm chart save ${{ inputs.chart_folder }} ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.app_version }}
       env:
         HELM_EXPERIMENTAL_OCI: '1'
 
@@ -83,4 +92,4 @@ runs:
     - name: Helm | Output
       id: output
       shell: bash
-      run: echo "::set-output name=image::${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.chart_version }}"
+      run: echo "::set-output name=image::${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.app_version }}"
