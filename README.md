@@ -15,7 +15,7 @@ See full parameter documentation at build/action.yml
     - uses: azure/setup-helm@v1
     - uses: chrisdickinson/setup-yq@latest
     - uses: SamhammerAG/helm-action/build@v1.1
-        with:
+      with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         registry_user: ${{ secrets.DOCKER_REGISTRY_USER }}
         registry_password: ${{ secrets.DOCKER_REGISTRY_PW }}
