@@ -38,6 +38,9 @@ inputs:
   kube_config:
     required: false
     description: Kubernetes custom config
+  additional_flags:
+    required: false
+    description: Additional flat flags
 runs:
   using: composite
   steps:
@@ -94,7 +97,10 @@ runs:
             UPGRADE_ARGS+=" --set-string ${{ inputs.set_string }}"
         fi
 
-        UPGRADE_ARGS+=" --wait"
+        if [ ! -z "${{ inputs.additional_flags }}" ]
+        then
+            UPGRADE_ARGS+=" ${{ inputs.additional_flags }}"
+        fi
 
         echo -n $UPGRADE_ARGS > /tmp/UPGRADE_ARGS
 
