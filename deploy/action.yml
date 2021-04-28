@@ -94,6 +94,8 @@ runs:
             UPGRADE_ARGS+=" --set-string ${{ inputs.set_string }}"
         fi
 
+        UPGRADE_ARGS+=" --wait"
+
         echo -n $UPGRADE_ARGS > /tmp/UPGRADE_ARGS
 
     - name: Helm | Release | Install
