@@ -14,7 +14,7 @@ See full parameter documentation at build/action.yml
     - uses: actions/checkout@v2
     - uses: azure/setup-helm@v1
     - uses: chrisdickinson/setup-yq@latest
-    - uses: SamhammerAG/helm-action/build@v1.2
+    - uses: SamhammerAG/helm-action/build@v1.3
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         registry_user: ${{ secrets.DOCKER_REGISTRY_USER }}
@@ -38,7 +38,7 @@ See full parameter documentation at deploy/action.yml
     - uses: actions/checkout@v2
     - uses: azure/setup-helm@v1
     - uses: chrisdickinson/setup-yq@latest
-    - uses: SamhammerAG/helm-action/deploy@v1.2
+    - uses: SamhammerAG/helm-action/deploy@v1.3
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         registry_user: ${{ secrets.DOCKER_REGISTRY_USER }}
