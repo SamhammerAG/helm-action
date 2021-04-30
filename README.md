@@ -49,6 +49,7 @@ See full parameter documentation at deploy/action.yml
         release_name: my-release
         values_file: ./my-chart/values.yaml #optional
         set_string: test=1 #optional
+        additional_flags: --wait #optional
 ```
 
 ## License
