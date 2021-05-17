@@ -92,7 +92,7 @@ runs:
         echo "Deleting helm releases:"
 
         if [ -z "${HELM_RELEASES}" ]; then
-          echo "nothing to delete."
+          echo "<nothing to delete>"
           exit 0
         fi
 
