@@ -29,8 +29,7 @@ runs:
         KUBE_CONFIG: ${{ inputs.kube_config }}
       run: |
         echo -n > /tmp/HELM_ARGS
-        if [ -n "${KUBE_CONFIG}" ]
-        then
+        if [ -n "${KUBE_CONFIG}" ]; then
             echo "${KUBE_CONFIG}" >/tmp/kube.config
             echo " --kubeconfig /tmp/kube.config" >> /tmp/HELM_ARGS
         fi
@@ -52,7 +51,7 @@ runs:
 
         echo "Filter helm releases by branch $BRANCH_FILTER"
         echo -n > /tmp/HELM_RELEASES
-        while read -r RELEASE;
+        for RELEASE in $HELM_RELEASES
         do
           set +e
           HELM_VALUES_JSON=$(helm get values $HELM_ARGS -n "${NAMESPACE}" --all -o json "${RELEASE}")
@@ -63,9 +62,7 @@ runs:
             echo "$RELEASE"
             echo -e "$RELEASE" >> /tmp/HELM_RELEASES
           fi
-        done <<EOF
-        $HELM_RELEASES
-        EOF
+        done
         echo
 
     - name: Helm | Release | Arguments
@@ -73,8 +70,7 @@ runs:
       env:
         ADDITONAL_FLAGS: ${{ inputs.additional_flags }}
       run: |
-        if [ -n "${ADDITONAL_FLAGS}" ]
-        then
+        if [ -n "${ADDITONAL_FLAGS}" ]; then
             echo " ${ADDITONAL_FLAGS}" >> /tmp/HELM_ARGS
         fi
 
@@ -87,11 +83,15 @@ runs:
         HELM_ARGS=$(cat /tmp/HELM_ARGS)
 
         echo "Deleting helm releases"
-        while read -r RELEASE;
+
+        if [ -z "${HELM_RELEASES}" ]; then
+          echo "Nothing to delete."
+          exit 0
+        fi
+
+        for RELEASE in $HELM_RELEASES
         do
-            echo "Uninstall: release $RELEASE from namespace $NAMESPACE with arguments $HELM_ARGS"
+            echo "Deleting release $RELEASE from namespace $NAMESPACE with arguments $HELM_ARGS"
             ##helm uninstall -n "${NAMESPACE}" ${HELM_ARGS} "${RELEASE}"
-        done <<EOF
-        $HELM_RELEASES
-        EOF
+        done
         echo
