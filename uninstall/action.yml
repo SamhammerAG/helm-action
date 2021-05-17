@@ -99,6 +99,6 @@ runs:
         for RELEASE in $HELM_RELEASES
         do
             echo "Deleting release $RELEASE from namespace $NAMESPACE with arguments $HELM_ARGS"
-            ##helm uninstall -n "${NAMESPACE}" ${HELM_ARGS} "${RELEASE}"
+            helm uninstall -n "${NAMESPACE}" ${HELM_ARGS} "${RELEASE}"
         done
         echo
