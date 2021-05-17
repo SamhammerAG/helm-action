@@ -44,7 +44,7 @@ runs:
         set -eu
         HELM_ARGS=$(cat /tmp/HELM_ARGS)
 
-        echo "Filter helm releases by name:"
+        echo "Filtered helm releases by name:"
         HELM_RELEASES=$(helm list -q $HELM_ARGS -n "${NAMESPACE}" -f "${RELEASE_FILTER}")
         if [ -n "${HELM_RELEASES}" ]; then
           echo "${HELM_RELEASES}"
@@ -56,7 +56,7 @@ runs:
           exit 0
         fi
 
-        echo "Filter helm releases by branch $BRANCH_FILTER:"
+        echo "Filtered helm releases by branch $BRANCH_FILTER:"
         echo -n > /tmp/HELM_RELEASES
         for RELEASE in $HELM_RELEASES
         do
@@ -98,7 +98,5 @@ runs:
 
         for RELEASE in $HELM_RELEASES
         do
-            echo "Deleting release $RELEASE from namespace $NAMESPACE with arguments $HELM_ARGS"
             helm uninstall -n "${NAMESPACE}" ${HELM_ARGS} "${RELEASE}"
         done
-        echo
