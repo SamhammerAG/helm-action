@@ -5,12 +5,12 @@ branding:
   color: blue
   icon: trash-2
 inputs:
-  branch_filter:
-    required: true
-    description: Branch name
   release_filter:
     required: true
     description: Helm release name (regular expression e.g. ^my-relase$)
+  branch_filter:
+    required: false
+    description: Branch name
   namespace:
     required: true
     description: Kubernetes namespace
@@ -44,12 +44,19 @@ runs:
         set -eu
         HELM_ARGS=$(cat /tmp/HELM_ARGS)
 
-        echo "Filter helm releases by name"
+        echo "Filter helm releases by name:"
         HELM_RELEASES=$(helm list -q $HELM_ARGS -n "${NAMESPACE}" -f "${RELEASE_FILTER}")
-        echo "${HELM_RELEASES}"
+        if [ -n "${HELM_RELEASES}" ]; then
+          echo "${HELM_RELEASES}"
+        fi
         echo
 
-        echo "Filter helm releases by branch $BRANCH_FILTER"
+        if [ -z "${BRANCH_FILTER}" ]; then
+          echo -n "${HELM_RELEASES}" > /tmp/HELM_RELEASES
+          exit 0
+        end
+
+        echo "Filter helm releases by branch $BRANCH_FILTER:"
         echo -n > /tmp/HELM_RELEASES
         for RELEASE in $HELM_RELEASES
         do
@@ -82,10 +89,10 @@ runs:
         HELM_RELEASES=$(cat /tmp/HELM_RELEASES)
         HELM_ARGS=$(cat /tmp/HELM_ARGS)
 
-        echo "Deleting helm releases"
+        echo "Deleting helm releases:"
 
         if [ -z "${HELM_RELEASES}" ]; then
-          echo "Nothing to delete."
+          echo "nothing to delete."
           exit 0
         fi
 
