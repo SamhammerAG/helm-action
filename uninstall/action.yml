@@ -54,7 +54,7 @@ runs:
         if [ -z "${BRANCH_FILTER}" ]; then
           echo -n "${HELM_RELEASES}" > /tmp/HELM_RELEASES
           exit 0
-        end
+        fi
 
         echo "Filter helm releases by branch $BRANCH_FILTER:"
         echo -n > /tmp/HELM_RELEASES
