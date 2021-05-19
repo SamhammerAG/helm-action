@@ -52,6 +52,24 @@ See full parameter documentation at deploy/action.yml
         additional_flags: --wait #optional
 ```
 
+# Helm Action Uninstall
+
+Uninstall helm release.\
+See full parameter documentation at uninstall/action.yml
+
+## Usage
+
+```yaml
+    steps:
+    - uses: actions/checkout@v2
+    - uses: azure/setup-helm@v1
+    - uses: SamhammerAG/helm-action/uninstall@v1.4
+      with:
+        namespace: my-namespace
+        release_filter: ^my-release$ #regex filter
+        additional_flags: --dry-run #optional
+```
+
 ## License
 
 This project is distributed under the [MIT license](LICENSE.md).
