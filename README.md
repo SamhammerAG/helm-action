@@ -57,17 +57,32 @@ See full parameter documentation at deploy/action.yml
 Uninstall helm release.\
 See full parameter documentation at uninstall/action.yml
 
-## Usage
+## Usage (simple)
 
 ```yaml
     steps:
-    - uses: actions/checkout@v2
     - uses: azure/setup-helm@v1
     - uses: SamhammerAG/helm-action/uninstall@v1.4
       with:
         namespace: my-namespace
         release_filter: ^my-release$ #regex filter
-        additional_flags: --dry-run #optional
+```
+
+## Usage (with branch filter)
+
+When you have deploy releases for feature branches you may set "branch" value (set-string/values-file) for this releases.
+Then you can delete that release when your branch is merged/deleted.
+
+```yaml
+    steps:
+    - uses: azure/setup-helm@v1
+    - run: echo "::set-output name=branch::${GITHUB_REF##*/}" | tr '[:upper:]' '[:lower:]'
+      id: version    
+    - uses: SamhammerAG/helm-action/uninstall@v1.4
+      with:
+        namespace: my-namespace
+        release_filter: ^my-release$ #regex filter
+        branch_filter: ${{ steps.version.outputs.branch }}
 ```
 
 ## License
