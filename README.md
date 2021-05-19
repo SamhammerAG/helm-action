@@ -54,7 +54,7 @@ See full parameter documentation at deploy/action.yml
 
 # Helm Action Uninstall
 
-Uninstall helm release.\
+Uninstall helm releases, by matching release name.\
 See full parameter documentation at uninstall/action.yml
 
 ## Usage (simple)
