@@ -1,0 +1,102 @@
+name: Helm Release Uninstall
+description: Uninstall Helm releases (with support for filters)
+author: Samhammer AG
+branding:
+  color: blue
+  icon: trash-2
+inputs:
+  release_filter:
+    required: true
+    description: Helm release name (regular expression e.g. ^my-relase$)
+  branch_filter:
+    required: false
+    description: Branch name
+  namespace:
+    required: true
+    description: Kubernetes namespace
+  kube_config:
+    required: false
+    description: Kubernetes custom config
+  additional_flags:
+    required: false
+    description: Additional flat flags (e.g. --dry-run)
+runs:
+  using: composite
+  steps:
+    - name: Helm | Release | KubeConfig
+      shell: bash
+      env:
+        KUBE_CONFIG: ${{ inputs.kube_config }}
+      run: |
+        echo -n > /tmp/HELM_ARGS
+        if [ -n "${KUBE_CONFIG}" ]; then
+            echo "${KUBE_CONFIG}" >/tmp/kube.config
+            echo " --kubeconfig /tmp/kube.config" >> /tmp/HELM_ARGS
+        fi
+
+    - name: Helm | Release | Filter
+      shell: bash
+      env:
+        NAMESPACE: ${{ inputs.namespace }}
+        RELEASE_FILTER: ${{ inputs.release_filter }}
+        BRANCH_FILTER: ${{ inputs.branch_filter }}
+      run: |
+        set -eu
+        HELM_ARGS=$(cat /tmp/HELM_ARGS)
+
+        echo "Filtered helm releases by name:"
+        HELM_RELEASES=$(helm list -q $HELM_ARGS -n "${NAMESPACE}" -f "${RELEASE_FILTER}")
+        if [ -n "${HELM_RELEASES}" ]; then
+          echo "${HELM_RELEASES}"
+        fi
+        echo
+
+        if [ -z "${BRANCH_FILTER}" ]; then
+          echo -n "${HELM_RELEASES}" > /tmp/HELM_RELEASES
+          exit 0
+        fi
+
+        echo "Filtered helm releases by branch $BRANCH_FILTER:"
+        echo -n > /tmp/HELM_RELEASES
+        for RELEASE in $HELM_RELEASES
+        do
+          set +e
+          HELM_VALUES_JSON=$(helm get values $HELM_ARGS -n "${NAMESPACE}" --all -o json "${RELEASE}")
+          BRANCH=$(echo "${HELM_VALUES_JSON}" | jq -r '.branch' )
+          set -e
+
+          if [ "$BRANCH" == "$BRANCH_FILTER" ];	then
+            echo "$RELEASE"
+            echo -e "$RELEASE" >> /tmp/HELM_RELEASES
+          fi
+        done
+        echo
+
+    - name: Helm | Release | Arguments
+      shell: bash
+      env:
+        ADDITONAL_FLAGS: ${{ inputs.additional_flags }}
+      run: |
+        if [ -n "${ADDITONAL_FLAGS}" ]; then
+            echo " ${ADDITONAL_FLAGS}" >> /tmp/HELM_ARGS
+        fi
+
+    - name: Helm | Release | Uninstall
+      shell: bash
+      env:
+        NAMESPACE: ${{ inputs.namespace }}
+      run: |
+        HELM_RELEASES=$(cat /tmp/HELM_RELEASES)
+        HELM_ARGS=$(cat /tmp/HELM_ARGS)
+
+        echo "Deleting helm releases:"
+
+        if [ -z "${HELM_RELEASES}" ]; then
+          echo "<nothing to delete>"
+          exit 0
+        fi
+
+        for RELEASE in $HELM_RELEASES
+        do
+            helm uninstall -n "${NAMESPACE}" ${HELM_ARGS} "${RELEASE}"
+        done
