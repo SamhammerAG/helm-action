@@ -14,7 +14,7 @@ See full parameter documentation at build/action.yml
     - uses: actions/checkout@v2
     - uses: azure/setup-helm@v1
     - uses: chrisdickinson/setup-yq@latest
-    - uses: SamhammerAG/helm-action/build@v1.3
+    - uses: SamhammerAG/helm-action/build@v1.5
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         registry_user: ${{ secrets.DOCKER_REGISTRY_USER }}
@@ -38,7 +38,7 @@ See full parameter documentation at deploy/action.yml
     - uses: actions/checkout@v2
     - uses: azure/setup-helm@v1
     - uses: chrisdickinson/setup-yq@latest
-    - uses: SamhammerAG/helm-action/deploy@v1.3
+    - uses: SamhammerAG/helm-action/deploy@v1.5
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         registry_user: ${{ secrets.DOCKER_REGISTRY_USER }}
@@ -62,7 +62,7 @@ See full parameter documentation at uninstall/action.yml
 ```yaml
     steps:
     - uses: azure/setup-helm@v1
-    - uses: SamhammerAG/helm-action/uninstall@v1.4
+    - uses: SamhammerAG/helm-action/uninstall@v1.5
       with:
         namespace: my-namespace
         release_filter: ^my-release$ #regex filter
@@ -71,14 +71,15 @@ See full parameter documentation at uninstall/action.yml
 ## Usage (with branch filter)
 
 When you have deploy releases for feature branches you may set "branch" value (set-string/values-file) for this releases.
-Then you can delete that release when your branch is merged/deleted.
+Then you can delete that release when your branch is merged/deleted. The "branch" Helm release parameter can be changed through
+the "branch_helm_property" setting of the action.
 
 ```yaml
     steps:
     - uses: azure/setup-helm@v1
     - run: echo "::set-output name=branch::${GITHUB_REF##*/}" | tr '[:upper:]' '[:lower:]'
-      id: version    
-    - uses: SamhammerAG/helm-action/uninstall@v1.4
+      id: version
+    - uses: SamhammerAG/helm-action/uninstall@v1.5
       with:
         namespace: my-namespace
         release_filter: ^my-release$ #regex filter
