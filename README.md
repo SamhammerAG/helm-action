@@ -26,6 +26,26 @@ See full parameter documentation at build/action.yml
         chart_annotations: company 'samhammer ag' #optional
 ```
 
+### Action inputs
+
+| Name | Description | Required | Default |
+| --- | --- | --- | --- |
+| `registry` | OCI registry | true | |
+| `registry_user` | OCI registry username | true | |
+| `registry_password` | OCI registry password | true | |
+| `registry_path` | Chart registry path | true | |
+| `chart_version` | Chart version (only optional, when defined in Chart.yaml) | false | |
+| `app_version` | App version (will be tagged and updated in Chart.yaml) | true | |
+| `chart_folder` | Chart folder | true | |
+| `chart_annotations` | Chart annotations that should be added (e.g. company 'samhammer ag' author 'alwin schiffman') | false | |
+
+### Action outputs
+
+| Name | Description |
+| --- | --- |
+| `image` | Chart image (Default '{registry}/{registry_path}:{chart_version}')
+
+
 # Helm Action Deploy
 
 Deploy chart from an OCI-based (Docker) registry.\
@@ -51,6 +71,24 @@ See full parameter documentation at deploy/action.yml
         set_string: test=1 #optional
         additional_flags: --wait #optional
 ```
+
+### Action inputs
+
+| Name | Description | Required | Default |
+| --- | --- | --- | --- |
+| `registry` | OCI registry | true | |
+| `registry_user` | OCI registry username | true | |
+| `registry_password` | OCI registry password | true | |
+| `registry_path` | Chart registry path | true | |
+| `app_version` | The app version tag | true | |
+| `release_name` | Helm release name | true | |
+| `release_name_max_length` | Helm release name chars before cut (defaults to 53, deactivate with 0) | false | 53 |
+| `namespace` | Kubernetes namespace | true | |
+| `values_file` | Values file | false | |
+| `set_string` | Single string parameter | false | |
+| `kube_config` | Kubernetes custom config | false | |
+| `additional_flags` | Additional flat flags | false | |
+
 
 # Helm Action Uninstall
 
@@ -85,6 +123,18 @@ the "branch_helm_property" setting of the action.
         release_filter: ^my-release$ #regex filter
         branch_filter: ${{ steps.version.outputs.branch }}
 ```
+
+### Action inputs
+
+| Name | Description | Required | Default |
+| --- | --- | --- | --- |
+| `release_filter` | Helm release name (regular expression e.g. ^my-relase$). Lookaheads are supported. | true | |
+| `branch_filter` | Branch name | false | |
+| `branch_helm_property` | Property-Path in Helm-Release JSON for branch detection. (JQ format) | false | .branch |
+| `namespace` | Kubernetes namespace | true | |
+| `kube_config` | Kubernetes custom config | false | |
+| `additional_flags` | Additional flat flags (e.g. --dry-run) | false | |
+| `max_age_in_days` | All releases older than given day-count would be marked for deletion. | false | |
 
 ## License
 
