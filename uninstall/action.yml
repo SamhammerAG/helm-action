@@ -99,9 +99,6 @@ runs:
           done
         fi
 
-        echo -n "${HELM_RELEASES}" > /tmp/HELM_RELEASES
-        exit 0
-
     - name: Helm | Release | Arguments
       shell: bash
       env:
