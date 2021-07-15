@@ -69,8 +69,7 @@ runs:
           for RELEASE in $HELM_RELEASES
           do
             set +e
-            HELM_VALUES_JSON=$(helm get values $HELM_ARGS -n "${NAMESPACE}" --all -o json "${RELEASE}")
-            BRANCH=$(echo "${HELM_VALUES_JSON}" | jq -r --arg BRANCH_HELM_PROPERTY "${BRANCH_HELM_PROPERTY}" '$BRANCH_HELM_PROPERTY')
+            BRANCH=$(helm get values $HELM_ARGS -n "${NAMESPACE}" --all -o json "${RELEASE}" | jq -r "${BRANCH_HELM_PROPERTY}")
             set -e
 
             if [ "$BRANCH" == "$BRANCH_FILTER" ]; then
