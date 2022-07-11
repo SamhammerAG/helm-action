@@ -83,7 +83,7 @@ runs:
       run: |
         if [ ! -z "${{ inputs.kube_config }}" ]
         then
-            echo ${{ inputs.kube_config }} >/tmp/kube.config
+            echo "${{ inputs.kube_config }}" >/tmp/kube.config
             UPGRADE_ARGS+=" --kubeconfig /tmp/kube.config"
         fi
 
