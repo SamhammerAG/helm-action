@@ -79,6 +79,8 @@ runs:
         echo -n $RELEASE_NAME > /tmp/RELEASE_NAME
 
     - name: Helm | Release | Arguments
+      env:
+        ADDITIONAL_FLAGS: ${{ inputs.additional_flags }}
       shell: bash
       run: |
         if [ ! -z "${{ inputs.kube_config }}" ]
@@ -97,9 +99,9 @@ runs:
             UPGRADE_ARGS+=" --set-string ${{ inputs.set_string }}"
         fi
 
-        if [ ! -z "${{ inputs.additional_flags }}" ]
+        if [ ! -z "$ADDITIONAL_FLAGS" ]
         then
-            UPGRADE_ARGS+=" ${{ inputs.additional_flags }}"
+            UPGRADE_ARGS+=" $ADDITIONAL_FLAGS"
         fi
 
         echo -n $UPGRADE_ARGS > /tmp/UPGRADE_ARGS
