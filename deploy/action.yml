@@ -87,10 +87,14 @@ runs:
             UPGRADE_ARGS+=" --kubeconfig /tmp/kube.config"
         fi
 
-        if [ ! -z "${{ inputs.values_file }}" ]
-        then
-            UPGRADE_ARGS+=" -f ${{ inputs.values_file }}"
-        fi
+        addValuesFile(){
+          if [ ! -z "$2" ]
+          then
+              UPGRADE_ARGS+=" -f $2"
+          fi
+        }
+
+        mapfile < <(echo "{{inputs.values_file}}") -td \; -c 1 -C addValuesFile
 
         if [ ! -z "${{ inputs.set_string }}" ]
         then
