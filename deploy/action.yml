@@ -94,7 +94,7 @@ runs:
           fi
         }
 
-        mapfile < <(echo "{{inputs.values_file}}") -td \; -c 1 -C addValuesFile
+        mapfile < <(echo "${{inputs.values_file}}") -td \; -c 1 -C addValuesFile
 
         if [ ! -z "${{ inputs.set_string }}" ]
         then
