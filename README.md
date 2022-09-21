@@ -104,6 +104,8 @@ See full parameter documentation at uninstall/action.yml
 ```yaml
     steps:
     - uses: azure/setup-helm@v1
+      with:
+        version: 'v3.6.3'    
     - uses: SamhammerAG/helm-action/uninstall@v1.5
       with:
         namespace: my-namespace
