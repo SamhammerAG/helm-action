@@ -92,4 +92,4 @@ runs:
     - name: Helm | Output
       id: output
       shell: bash
-      run: echo "::set-output name=image::${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.app_version }}"
+      run: echo "image=${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.app_version }}">> $GITHUB_OUTPUT

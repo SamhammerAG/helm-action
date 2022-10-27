@@ -60,7 +60,7 @@ See full parameter documentation at deploy/action.yml
     - uses: actions/checkout@v2
     - uses: azure/setup-helm@v1
       with:
-        version: 'v3.6.3'    
+        version: 'v3.6.3'
     - uses: chrisdickinson/setup-yq@latest
     - uses: SamhammerAG/helm-action/deploy@v1.5
       with:
@@ -105,7 +105,7 @@ See full parameter documentation at uninstall/action.yml
     steps:
     - uses: azure/setup-helm@v1
       with:
-        version: 'v3.6.3'    
+        version: 'v3.6.3'
     - uses: SamhammerAG/helm-action/uninstall@v1.5
       with:
         namespace: my-namespace
@@ -122,8 +122,8 @@ the "branch_helm_property" setting of the action.
     steps:
     - uses: azure/setup-helm@v1
       with:
-        version: 'v3.6.3'   
-    - run: echo "::set-output name=branch::${GITHUB_REF##*/}" | tr '[:upper:]' '[:lower:]'
+        version: 'v3.6.3'
+    - run: echo "branch=${GITHUB_REF##*/}">> $GITHUB_OUTPUT | tr '[:upper:]' '[:lower:]'
       id: version
     - uses: SamhammerAG/helm-action/uninstall@v1.5
       with:
