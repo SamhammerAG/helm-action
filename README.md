@@ -123,7 +123,7 @@ the "branch_helm_property" setting of the action.
     - uses: azure/setup-helm@v1
       with:
         version: 'v3.6.3'
-    - run: echo "branch=${GITHUB_REF##*/}">> $GITHUB_OUTPUT | tr '[:upper:]' '[:lower:]'
+    - run: echo "branch=${GITHUB_REF##*/}" | tr '[:upper:]' '[:lower:]' >> $GITHUB_OUTPUT 
       id: version
     - uses: SamhammerAG/helm-action/uninstall@v1.5
       with:
