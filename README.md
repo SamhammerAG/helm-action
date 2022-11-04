@@ -11,12 +11,12 @@ See full parameter documentation at build/action.yml
 
 ```yaml
     steps:
-    - uses: actions/checkout@v2
-    - uses: azure/setup-helm@v1
+    - uses: actions/checkout@v3
+    - uses: azure/setup-helm@v3
       with:
         version: 'v3.6.3'
-    - uses: chrisdickinson/setup-yq@latest
-    - uses: SamhammerAG/helm-action/build@v1.5
+    - uses: SamhammerAG/setup-yq@1.0.2
+    - uses: SamhammerAG/helm-action/build@v1.5.2
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         registry_user: ${{ secrets.DOCKER_REGISTRY_USER }}
@@ -57,12 +57,12 @@ See full parameter documentation at deploy/action.yml
 
 ```yaml
     steps:
-    - uses: actions/checkout@v2
-    - uses: azure/setup-helm@v1
+    - uses: actions/checkout@v3
+    - uses: azure/setup-helm@v3
       with:
         version: 'v3.6.3'
-    - uses: chrisdickinson/setup-yq@latest
-    - uses: SamhammerAG/helm-action/deploy@v1.5
+    - uses: SamhammerAG/setup-yq@1.0.2
+    - uses: SamhammerAG/helm-action/deploy@v1.5.2
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         registry_user: ${{ secrets.DOCKER_REGISTRY_USER }}
@@ -103,10 +103,10 @@ See full parameter documentation at uninstall/action.yml
 
 ```yaml
     steps:
-    - uses: azure/setup-helm@v1
+    - uses: azure/setup-helm@v3
       with:
         version: 'v3.6.3'
-    - uses: SamhammerAG/helm-action/uninstall@v1.5
+    - uses: SamhammerAG/helm-action/uninstall@v1.5.2
       with:
         namespace: my-namespace
         release_filter: ^my-release$ #regex filter
@@ -120,12 +120,12 @@ the "branch_helm_property" setting of the action.
 
 ```yaml
     steps:
-    - uses: azure/setup-helm@v1
+    - uses: azure/setup-helm@v3
       with:
         version: 'v3.6.3'
     - run: echo "branch=${GITHUB_REF##*/}" | tr '[:upper:]' '[:lower:]' >> $GITHUB_OUTPUT 
       id: version
-    - uses: SamhammerAG/helm-action/uninstall@v1.5
+    - uses: SamhammerAG/helm-action/uninstall@v1.5.2
       with:
         namespace: my-namespace
         release_filter: ^my-release$ #regex filter
