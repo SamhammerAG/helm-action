@@ -47,9 +47,9 @@ runs:
       run: |
         if [ "${{ inputs.chart_annotations }}" ]
         then
-            echo "${{ inputs.chart_annotations }}" | tr ',' '\n' | xargs -n2 -r bash -c 'yq write -i '"${{ inputs.chart_folder }}/Chart.yaml"' "annotations.$1" "$2"' argv0
+            echo "${{ inputs.chart_annotations }}" | tr ',' '\n' | xargs -n2 -r bash -c 'yq ".annotations.$0 = \"$1\" " "$2"' argv0 -i '"${{ inputs.chart_folder }}/Chart.yaml"'
             echo "Cart annotations:"
-            yq read "${{ inputs.chart_folder }}/Chart.yaml" annotations
+            yq ".annotations" "${{ inputs.chart_folder }}/Chart.yaml"
         fi
 
     - name: Helm | Chart | Version
@@ -57,18 +57,18 @@ runs:
       run: |
         if [ "${{ inputs.app_version }}" ]
         then
-            yq write -i "${{ inputs.chart_folder }}/Chart.yaml" appVersion "${{ inputs.app_version }}"
+            yq ".appVersion = \"${{ inputs.app_version }}\" " -i "${{ inputs.chart_folder }}/Chart.yaml"
         else
           echo "::error::inputs.app_version is required"; exit 1
         fi
 
         if [ "${{ inputs.chart_version }}" ]
         then
-            yq write -i "${{ inputs.chart_folder }}/Chart.yaml" version "${{ inputs.chart_version }}"
+            yq ".version = \"${{ inputs.chart_version }}\" " -i "${{ inputs.chart_folder }}/Chart.yaml"
         fi
 
-        echo "App version: $(yq read '${{ inputs.chart_folder }}/Chart.yaml' appVersion)"
-        echo "Cart version: $(yq read '${{ inputs.chart_folder }}/Chart.yaml' version)"
+        echo "App version: $(yq '.appVersion' '${{ inputs.chart_folder }}/Chart.yaml')"
+        echo "Chart version: $(yq '.version' '${{ inputs.chart_folder }}/Chart.yaml' )"
 
     - name: Helm | Chart | Save
       shell: bash

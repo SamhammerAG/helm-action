@@ -15,7 +15,6 @@ See full parameter documentation at build/action.yml
     - uses: azure/setup-helm@v3
       with:
         version: 'v3.6.3'
-    - uses: SamhammerAG/setup-yq@1.0.2
     - uses: SamhammerAG/helm-action/build@v1.5.2
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
@@ -61,7 +60,6 @@ See full parameter documentation at deploy/action.yml
     - uses: azure/setup-helm@v3
       with:
         version: 'v3.6.3'
-    - uses: SamhammerAG/setup-yq@1.0.2
     - uses: SamhammerAG/helm-action/deploy@v1.5.2
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
@@ -123,7 +121,7 @@ the "branch_helm_property" setting of the action.
     - uses: azure/setup-helm@v3
       with:
         version: 'v3.6.3'
-    - run: echo "branch=${GITHUB_REF##*/}" | tr '[:upper:]' '[:lower:]' >> $GITHUB_OUTPUT 
+    - run: echo "branch=${GITHUB_REF##*/}" | tr '[:upper:]' '[:lower:]' >> $GITHUB_OUTPUT
       id: version
     - uses: SamhammerAG/helm-action/uninstall@v1.5.2
       with:
