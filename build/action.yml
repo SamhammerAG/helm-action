@@ -47,7 +47,7 @@ runs:
       run: |
         if [ "${{ inputs.chart_annotations }}" ]
         then
-            echo "${{ inputs.chart_annotations }}" | tr ',' '\n' | xargs -n2 -r bash -c 'yq ".annotations.$0 = \"$1\" " "$2"' argv0 -i '"${{ inputs.chart_folder }}/Chart.yaml"'
+            echo "${{ inputs.chart_annotations }}" | tr ',' '\n' | xargs -n2 -r bash -c 'yq ".annotations.$0 = \"$1\" " -i "${{ inputs.chart_folder }}/Chart.yaml"'
             echo "Cart annotations:"
             yq ".annotations" "${{ inputs.chart_folder }}/Chart.yaml"
         fi
