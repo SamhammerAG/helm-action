@@ -59,13 +59,14 @@ See full parameter documentation at deploy/action.yml
     - uses: actions/checkout@v3
     - uses: azure/setup-helm@v3
       with:
-        version: 'v3.6.3'
-    - uses: SamhammerAG/helm-action/deploy@v1.5.2
+        version: 'v3.12.3'
+    - uses: SamhammerAG/helm-action/deploy@v2.0.0
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         registry_user: ${{ secrets.DOCKER_REGISTRY_USER }}
         registry_password: ${{ secrets.DOCKER_REGISTRY_PW }}
-        registry_path: charts/my-chart
+        registry_path: charts
+        chart_name: my-chart
         app_version: 1.0
         namespace: my-namespace
         release_name: my-release
@@ -103,8 +104,8 @@ See full parameter documentation at uninstall/action.yml
     steps:
     - uses: azure/setup-helm@v3
       with:
-        version: 'v3.6.3'
-    - uses: SamhammerAG/helm-action/uninstall@v1.5.2
+        version: 'v3.12.3'
+    - uses: SamhammerAG/helm-action/uninstall@v2.0.0
       with:
         namespace: my-namespace
         release_filter: ^my-release$ #regex filter
@@ -120,10 +121,10 @@ the "branch_helm_property" setting of the action.
     steps:
     - uses: azure/setup-helm@v3
       with:
-        version: 'v3.6.3'
+        version: 'v3.12.3'
     - run: echo "branch=${GITHUB_REF##*/}" | tr '[:upper:]' '[:lower:]' >> $GITHUB_OUTPUT
       id: version
-    - uses: SamhammerAG/helm-action/uninstall@v1.5.2
+    - uses: SamhammerAG/helm-action/uninstall@v2.0.0
       with:
         namespace: my-namespace
         release_filter: ^my-release$ #regex filter
