@@ -14,8 +14,8 @@ See full parameter documentation at build/action.yml
     - uses: actions/checkout@v3
     - uses: azure/setup-helm@v3
       with:
-        version: 'v3.6.3'
-    - uses: SamhammerAG/helm-action/build@v1.5.2
+        version: 'v3.12.3'
+    - uses: SamhammerAG/helm-action/build@v2.0.0
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         registry_user: ${{ secrets.DOCKER_REGISTRY_USER }}
