@@ -73,13 +73,13 @@ runs:
     - name: Helm | Chart | Save
       shell: bash
       run: |
-        helm chart save ${{ inputs.chart_folder }} ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.app_version }}
+        helm package ${{ inputs.chart_folder }} --version ${{ inputs.app_version }} --app-version ${{ inputs.app_version}}
       env:
         HELM_EXPERIMENTAL_OCI: '1'
 
     - name: Helm | Chart | Push
       shell: bash
-      run: helm chart push ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.app_version }}
+      run: helm push $(yq ".name" ${{inputs.chart_folder}}/Chart.yaml)-${{ inputs.app_version }}.tgz oci://${{ inputs.registry }}/${{ inputs.registry_path }}
       env:
         HELM_EXPERIMENTAL_OCI: '1'
 

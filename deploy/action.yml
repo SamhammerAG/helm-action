@@ -17,6 +17,9 @@ inputs:
   registry_path:
     required: true
     description: Chart registry path
+  chart_name:
+    required: true
+    description: Chart name
   app_version:
     required: true
     description: The app version tag
@@ -47,20 +50,6 @@ runs:
     - name: Helm | Login
       shell: bash
       run: echo ${{ inputs.registry_password }} | helm registry login -u ${{ inputs.registry_user }} --password-stdin ${{ inputs.registry }}
-      env:
-        HELM_EXPERIMENTAL_OCI: '1'
-
-    - name: Helm | Chart | Pull
-      shell: bash
-      run: helm chart pull ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.app_version }}
-      env:
-        HELM_EXPERIMENTAL_OCI: '1'
-
-    - name: Helm | Chart | Export
-      shell: bash
-      run: helm chart export ${{ inputs.registry }}/${{ inputs.registry_path }}:${{ inputs.app_version }} | grep name | cut -d ':' -f2 | tr -d ' ' > /tmp/CHART_NAME
-      env:
-        HELM_EXPERIMENTAL_OCI: '1'
 
     - name: Helm | Release | Name
       shell: bash
@@ -107,14 +96,13 @@ runs:
     - name: Helm | Release | Install
       shell: bash
       run: |
-        CHART_NAME=$(cat /tmp/CHART_NAME)
         UPGRADE_ARGS=$(cat /tmp/UPGRADE_ARGS)
         RELEASE_NAME=$(cat /tmp/RELEASE_NAME)
         NAMESPACE=${{ inputs.namespace }}
 
-        echo "Install: release $RELEASE_NAME to namespace $NAMESPACE, using chart $CHART_NAME with arguments $UPGRADE_ARGS"
+        echo "Install: release $RELEASE_NAME to namespace $NAMESPACE, using chart ${{inputs.chart_name}} with arguments $UPGRADE_ARGS"
 
-        helm upgrade -i $RELEASE_NAME $CHART_NAME -n $NAMESPACE $UPGRADE_ARGS
+        helm upgrade -i $RELEASE_NAME oci://${{ inputs.registry }}/${{ inputs.registry_path }}/${{inputs.chart_name}} --version ${{ inputs.app_version }} -n $NAMESPACE $UPGRADE_ARGS
       env:
         HELM_EXPERIMENTAL_OCI: '1'
 
