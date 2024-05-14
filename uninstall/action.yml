@@ -27,6 +27,9 @@ inputs:
   max_age_in_days:
     required: false
     description: All releases older than given day-count would be marked for deletion.
+  helm_list_args:
+    required: false
+    description: Apply arguments to `helm list` which is used for retriving the releases
 runs:
   using: composite
   steps:
@@ -49,12 +52,13 @@ runs:
         BRANCH_FILTER: ${{ inputs.branch_filter }}
         BRANCH_HELM_PROPERTY: ${{ inputs.branch_helm_property }}
         MAX_AGE_IN_DAYS: ${{ inputs.max_age_in_days }}
+        HELM_LIST_ARGS: ${{ inputs.helm_list_args }}
       run: |
         set -eu
         HELM_ARGS=$(cat /tmp/HELM_ARGS)
 
         echo "Filtered helm releases by name:"
-        HELM_RELEASES_JSON=$(helm list $HELM_ARGS -n "${NAMESPACE}" -o json | jq -r --arg REG ${RELEASE_FILTER} '.[] | select(.name|test($REG))' | jq -s '.')
+        HELM_RELEASES_JSON=$(helm list $HELM_LIST_ARGS $HELM_ARGS -n "${NAMESPACE}" -o json | jq -r --arg REG ${RELEASE_FILTER} '.[] | select(.name|test($REG))' | jq -s '.')
         HELM_RELEASES=$(echo "${HELM_RELEASES_JSON}" | jq -r '.[].name')
         echo -n "${HELM_RELEASES}" > /tmp/HELM_RELEASES
 
