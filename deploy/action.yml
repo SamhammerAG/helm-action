@@ -35,6 +35,9 @@ inputs:
   values_file:
     required: false
     description: Values file
+  optional_values_file:
+    required: false
+    description: Optional values file
   set_string:
     required: false
     description: Values file
@@ -79,6 +82,19 @@ runs:
         if [ ! -z "${{ inputs.values_file }}" ]
         then
             UPGRADE_ARGS+=" -f ${{ inputs.values_file }}"
+        fi
+
+        if [ ! -z "${{ inputs.optional_values_file }}" ]
+        then
+
+            IFS=',' read -ra optional_values_array <<< "${{ inputs.optional_values_file }}"
+
+            for i in "${optional_values_array[@]}"
+            do
+                if test -f "$i"; then
+                    UPGRADE_ARGS+=" -f ${i}"
+                fi
+            done
         fi
 
         if [ ! -z "${{ inputs.set_string }}" ]

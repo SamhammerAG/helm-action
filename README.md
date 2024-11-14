@@ -87,7 +87,8 @@ See full parameter documentation at deploy/action.yml
 | `release_name` | Helm release name | true | |
 | `release_name_max_length` | Helm release name chars before cut (defaults to 53, deactivate with 0) | false | 53 |
 | `namespace` | Kubernetes namespace | true | |
-| `values_file` | Values file (for multiple files use comma as delimiter) | false | |
+| `values_file` | Values file that must exist (for multiple files use comma as delimiter) | false | |
+| `optional_values_file` | Optional values file (for multiple files use comma as delimiter) | false | |
 | `set_string` | Single string parameter | false | |
 | `kube_config` | Kubernetes custom config | false | |
 | `additional_flags` | Additional flat flags | false | |
