@@ -47,6 +47,10 @@ inputs:
   additional_flags:
     required: false
     description: Additional flat flags
+outputs:
+  actual_release_name:
+    description: "Name of the installed release"
+    value: ${{ steps.release-name.outputs.actual-release-name }}
 runs:
   using: composite
   steps:
@@ -55,6 +59,7 @@ runs:
       run: echo ${{ inputs.registry_password }} | helm registry login -u ${{ inputs.registry_user }} --password-stdin ${{ inputs.registry }}
 
     - name: Helm | Release | Name
+      id: release-name
       shell: bash
       run: |
         RELEASE_NAME=${{ inputs.release_name }}
@@ -69,6 +74,7 @@ runs:
         fi
 
         echo -n $RELEASE_NAME > /tmp/RELEASE_NAME
+        echo "actual-release-name=$(echo $RELEASE_NAME)" >> $GITHUB_OUTPUT
 
     - name: Helm | Release | Arguments
       shell: bash

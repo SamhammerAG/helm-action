@@ -93,6 +93,11 @@ See full parameter documentation at deploy/action.yml
 | `kube_config` | Kubernetes custom config | false | |
 | `additional_flags` | Additional flat flags | false | |
 
+### Action outputs
+
+| Name | Description |
+| --- | --- |
+| `actual_release_name` | The actual relese name that is used for installation (shortened if max length reached)
 
 # Helm Action Uninstall
 
