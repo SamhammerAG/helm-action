@@ -44,7 +44,7 @@ See full parameter documentation at build/action.yml
 
 | Name | Description |
 | --- | --- |
-| `image` | Chart image (Default '{registry}/{registry_path}:{chart_version}')
+| `image` | Chart image (Default '{registry}/{registry_path}/{chart_name}:{chart_version}')
 
 
 # Helm Action Deploy
