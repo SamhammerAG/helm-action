@@ -123,7 +123,7 @@ runs:
         NAMESPACE=${{ inputs.namespace }}
 
         echo "Install: release $RELEASE_NAME to namespace $NAMESPACE, using chart ${{inputs.chart_name}} with arguments $UPGRADE_ARGS"
-        helm dependencies build
+
         helm upgrade -i $RELEASE_NAME oci://${{ inputs.registry }}/${{ inputs.registry_path }}/${{inputs.chart_name}} --version ${{ inputs.app_version }} -n $NAMESPACE $UPGRADE_ARGS
       env:
         HELM_EXPERIMENTAL_OCI: '1'
