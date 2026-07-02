@@ -73,8 +73,8 @@ runs:
     - name: Helm | Chart | Save
       shell: bash
       run: |
-        helm dependencies build ${{ inputs.chart_folder }}
-        helm package ${{ inputs.chart_folder }} --version ${{ inputs.app_version }} --app-version ${{ inputs.app_version}}
+        helm dependencies build '${{ inputs.chart_folder }}'
+        helm package '${{ inputs.chart_folder }}' --version ${{ inputs.app_version }} --app-version ${{ inputs.app_version}}
       env:
         HELM_EXPERIMENTAL_OCI: '1'
 
